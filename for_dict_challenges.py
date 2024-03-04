@@ -112,25 +112,17 @@ for class_info in school:
     class_name = class_info['class']
     students = class_info['students']
     
-    def is_female_student(student):
+    girls = 0
+    boys = 0
+    
+    for student in students:
         name = student['first_name']
         if name in is_male and not is_male[name]:
-            return True
-        else:
-            return False
-    
-    num_girls = sum(1 for student in students if is_female_student(student))
-    
-    def is_male_student(student):
-        name = student['first_name']
-        if name in is_male and is_male[name]:
-            return True
-        else:
-            return False
+            girls += 1
+        elif name in is_male and is_male[name]:
+            boys += 1
         
-    num_boys = sum(1 for student in students if is_male_student(student))
-    
-    print(f'Класс {class_name}: девочки {num_girls}, мальчики {num_boys}')
+    print(f'Класс {class_name}: девочки {girls}, мальчики {boys}')
 
 # Задание 5
 # По информации о учениках разных классов нужно найти класс, в котором больше всего девочек и больше всего мальчиков
@@ -149,28 +141,33 @@ is_male = {
     'Миша': True,
 }
 
-def class_with_most_students_by_gender(school_data, gender_data):
-    max_girls_class = max_boys_class = None
-    max_girls_count = max_boys_count = 0
+def count_students(students, gender_data):
+    girls = 0
+    boys = 0
+    
+    for student in students:
+        name = student['first_name']
+        if name in gender_data and not gender_data[name]:
+            girls += 1
+        elif name in gender_data and gender_data[name]:
+            boys += 1
+            
+    return girls, boys
 
-    for class_info in school_data:
-        class_name = class_info['class']
-        students = class_info['students']
+max_girls_class = max_boys_class = None
+max_girls_count = max_boys_count = 0
 
-        num_girls = sum(1 for student in students if not gender_data.get(student['first_name'], True))
-        num_boys = sum(1 for student in students if gender_data.get(student['first_name'], False))
-
-        if num_girls > max_girls_count:
-            max_girls_count, max_girls_class = num_girls, class_name
-
-        if num_boys > max_boys_count:
-            max_boys_count, max_boys_class = num_boys, class_name
-
-    return max_boys_class, max_girls_class
-
-
-most_boys_class, most_girls_class = class_with_most_students_by_gender(school, is_male)
-
-print(f'Больше всего мальчиков в классе {most_boys_class}')
-print(f'Больше всего девочек в классе {most_girls_class}')
-
+for class_info in school:
+    class_name = class_info['class']
+    students = class_info['students']
+    
+    class_girls, class_boys = count_students(students, is_male)
+        
+    if class_girls > max_girls_count:
+        max_girls_count, max_girls_class = class_girls, class_name
+            
+    if class_boys > max_boys_count:
+        max_boys_count, max_boys_class = class_boys, class_name
+            
+print(f'Больше всего мальчиков в классе {max_boys_class}')
+print(f'Больше всего девочек в классе {max_girls_class}')
